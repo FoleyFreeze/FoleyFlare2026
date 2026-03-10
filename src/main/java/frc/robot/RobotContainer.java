@@ -8,7 +8,6 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -18,14 +17,22 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.commands.ClimbDown;
+import frc.robot.commands.ClimbUp;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.Eject;
+import frc.robot.commands.ExampleAuto;
+import frc.robot.commands.Intake;
+import frc.robot.commands.LaunchSequence;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.climb.ClimberSubsystem;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.fuel.CANFuelSubsystem;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOLimelight;
@@ -42,15 +49,23 @@ public class RobotContainer {
   // Subsystems
   private final Drive drive;
   private final Vision vision;
+  private final CANFuelSubsystem fuelSubsystem;
+  private final ClimberSubsystem climberSubsystem;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
+  // The operator's controller, by default it is setup to use a single controller
+  private final CommandXboxController operatorController = new CommandXboxController(1);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+
+    fuelSubsystem = new CANFuelSubsystem();
+    climberSubsystem = new ClimberSubsystem();
+
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
@@ -69,6 +84,7 @@ public class RobotContainer {
                 drive::addVisionMeasurement,
                 new VisionIOLimelight("camera0Name", drive::getRotation),
                 new VisionIOLimelight("camera1Name", drive::getRotation));
+
         break;
 
       case SIM:
@@ -105,6 +121,8 @@ public class RobotContainer {
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+    autoChooser.addDefaultOption("Example Auto", new ExampleAuto(drive, fuelSubsystem));
+    // autoChooser.setDefaultOption("Autonomous", new ExampleAuto(driveSubsystem, fuelSubsystem));
 
     // Set up SysId routines
     autoChooser.addOption(
@@ -141,15 +159,40 @@ public class RobotContainer {
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
 
-    // Lock to 0° when A button is held
+    // Lock to 0° when B button is held
     controller
-        .a()
+        .b()
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
                 () -> -controller.getLeftY(),
                 () -> -controller.getLeftX(),
                 () -> Rotation2d.kZero));
+
+    // While the left bumper on operator controller is held, intake Fuel
+    controller.leftBumper().whileTrue(new Intake(fuelSubsystem));
+    // While the right bumper on the operator controller is held, spin up for 1
+    // second, then launch fuel. When the button is released, stop.
+    controller.rightBumper().whileTrue(new LaunchSequence(fuelSubsystem));
+    // While the A button is held on the operator controller, eject fuel back out
+    // the intake
+    controller.a().whileTrue(new Eject(fuelSubsystem));
+    // While the down arrow on the directional pad is held it will unclimb the robot
+    controller.povDown().whileTrue(new ClimbDown(climberSubsystem));
+    // While the up arrow on the directional pad is held it will cimb the robot
+    controller.povUp().whileTrue(new ClimbUp(climberSubsystem));
+
+    // Removed from Everybot:
+    // Set the default command for the drive subsystem to the command provided by
+    // factory with the values provided by the joystick axes on the driver
+    // controller. The Y axis of the controller is inverted so that pushing the
+    // stick away from you (a negative value) drives the robot forwards (a positive
+    // value)
+    // drive.setDefaultCommand(new Drive(drive, controller));
+
+    fuelSubsystem.setDefaultCommand(fuelSubsystem.run(() -> fuelSubsystem.stop()));
+
+    climberSubsystem.setDefaultCommand(climberSubsystem.run(() -> climberSubsystem.stop()));
 
     // Switch to X pattern when X button is pressed
     controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
@@ -166,20 +209,12 @@ public class RobotContainer {
                 .ignoringDisable(true));
 
     // Auto aim command example
-    @SuppressWarnings("resource")
-    PIDController aimController = new PIDController(0.2, 0.0, 0.0);
-    aimController.enableContinuousInput(-Math.PI, Math.PI);
-    controller
-        .button(1)
-        .whileTrue(
-            Commands.startRun(
-                () -> {
-                  aimController.reset();
-                },
-                () -> {
-                  // drive.run(0.0, aimController.calculate(vision.getTargetX(0).getRadians()));
-                },
-                drive));
+    /**
+     * @SuppressWarnings("resource") PIDController aimController = new PIDController(0.2, 0.0, 0.0);
+     * aimController.enableContinuousInput(-Math.PI, Math.PI); controller .button(1) .whileTrue(
+     * Commands.startRun( () -> { aimController.reset(); }, () -> { // drive.run(0.0,
+     * aimController.calculate(vision.getTargetX(0).getRadians())); }, drive));
+     */
   }
 
   /**
