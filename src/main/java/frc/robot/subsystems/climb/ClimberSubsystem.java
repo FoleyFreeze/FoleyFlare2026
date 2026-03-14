@@ -2,8 +2,8 @@ package frc.robot.subsystems.climb;
 
 import static frc.robot.Constants.ClimbConstatns.*;
 
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
+import com.revrobotics.PersistMode; // WAS import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.ResetMode; // WAS import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -16,7 +16,7 @@ public class ClimberSubsystem extends SubsystemBase {
   /** Creates a new CANBallSubsystem. */
   public ClimberSubsystem() {
     // create brushed motors for each of the motors on the launcher mechanism
-    climberMotor = new SparkMax(CLIMBER_MOTOR_ID, MotorType.kBrushed);
+    climberMotor = new SparkMax(CLIMBER_MOTOR_ID, MotorType.kBrushless);
 
     // create the configuration for the climb moter, set a current limit and apply
     // the config to the controller
