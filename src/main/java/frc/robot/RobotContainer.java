@@ -144,6 +144,8 @@ public class RobotContainer {
     configureButtonBindings();
   }
 
+  double driveMultipleXY = 1.0;
+  double driveMultipleZ = 0.75;
   /**
    * Use this method to define your button->command mappings. Buttons can be created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
@@ -155,9 +157,9 @@ public class RobotContainer {
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+            () -> -controller.getLeftY() * driveMultipleXY,
+            () -> -controller.getLeftX() * driveMultipleXY,
+            () -> -controller.getRightX() * driveMultipleZ));
 
     // Lock to 0° when B button is held
     controller
@@ -165,22 +167,33 @@ public class RobotContainer {
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 drive,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
+                () -> -controller.getLeftY() * driveMultipleXY,
+                () -> -controller.getLeftX() * driveMultipleXY,
                 () -> Rotation2d.kZero));
 
+    controller
+        .a()
+        .whileTrue(
+            DriveCommands.joystickDriveAtAngle(
+                drive,
+                () -> -controller.getLeftY() * driveMultipleXY,
+                () -> -controller.getLeftX() * driveMultipleXY,
+                () -> Rotation2d.fromDegrees(drive.getBumpAngle())));
+
+    controller.start().onTrue(drive.zeroSwerve());
+
     // While the left bumper on operator controller is held, intake Fuel
-    controller.leftBumper().whileTrue(new Intake(fuelSubsystem));
+    operatorController.leftBumper().whileTrue(new Intake(fuelSubsystem));
     // While the right bumper on the operator controller is held, spin up for 1
     // second, then launch fuel. When the button is released, stop.
-    controller.rightBumper().whileTrue(new LaunchSequence(fuelSubsystem));
+    operatorController.rightBumper().whileTrue(new LaunchSequence(fuelSubsystem));
     // While the A button is held on the operator controller, eject fuel back out
     // the intake
-    controller.a().whileTrue(new Eject(fuelSubsystem));
+    operatorController.a().whileTrue(new Eject(fuelSubsystem));
     // While the down arrow on the directional pad is held it will unclimb the robot
-    controller.povDown().whileTrue(new ClimbDown(climberSubsystem));
+    operatorController.povDown().whileTrue(new ClimbDown(climberSubsystem));
     // While the up arrow on the directional pad is held it will cimb the robot
-    controller.povUp().whileTrue(new ClimbUp(climberSubsystem));
+    operatorController.povUp().whileTrue(new ClimbUp(climberSubsystem));
 
     // Removed from Everybot:
     // Set the default command for the drive subsystem to the command provided by

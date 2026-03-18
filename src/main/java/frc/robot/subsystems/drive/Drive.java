@@ -37,6 +37,7 @@ import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
@@ -257,6 +258,19 @@ public class Drive extends SubsystemBase {
     stop();
   }
 
+  public Command zeroSwerve() {
+    return new InstantCommand(
+        () ->
+            setPose(
+                new Pose2d(
+                    getPose().getTranslation(),
+                    isRedAlliance() ? Rotation2d.k180deg : Rotation2d.kZero)));
+  }
+
+  public boolean isRedAlliance() {
+    return DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red);
+  }
+
   /** Returns a command to run a quasistatic test in the specified direction. */
   public Command sysIdQuasistatic(SysIdRoutine.Direction direction) {
     return run(() -> runCharacterization(0.0))
@@ -355,5 +369,21 @@ public class Drive extends SubsystemBase {
       new Translation2d(TunerConstants.BackLeft.LocationX, TunerConstants.BackLeft.LocationY),
       new Translation2d(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)
     };
+  }
+
+  public double getBumpAngle() {
+    double targetMod = 90;
+    double currentAngle = getRotation().getDegrees() + 45;
+    double delta = currentAngle % targetMod;
+    double shortDelta;
+    if (delta > targetMod) {
+      shortDelta = delta - targetMod;
+    } else if (delta < targetMod) {
+      shortDelta = delta + targetMod;
+    } else {
+      shortDelta = delta;
+    }
+    double setPoint = currentAngle - shortDelta - 45;
+    return setPoint;
   }
 }
