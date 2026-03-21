@@ -121,7 +121,9 @@ public class RobotContainer {
 
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
-    autoChooser.addDefaultOption("Example Auto", new ExampleAuto(drive, fuelSubsystem));
+    autoChooser.addDefaultOption(
+        "Example Auto", new ExampleAuto(drive, fuelSubsystem, climberSubsystem));
+    // autoChooser.addDefaultOption("Example Auto", new ExampleAuto(drive, fuelSubsystem));
     // autoChooser.setDefaultOption("Autonomous", new ExampleAuto(driveSubsystem, fuelSubsystem));
 
     // Set up SysId routines

@@ -1,10 +1,10 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.commands;
 
+import static frc.robot.Constants.ClimbConstatns.*;
+
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.subsystems.climb.ClimberSubsystem;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.fuel.CANFuelSubsystem;
 
@@ -13,16 +13,17 @@ import frc.robot.subsystems.fuel.CANFuelSubsystem;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class ExampleAuto extends SequentialCommandGroup {
   /** Creates a new ExampleAuto. */
-  public ExampleAuto(Drive driveSubsystem, CANFuelSubsystem ballSubsystem) {
+  public ExampleAuto(
+      Drive driveSubsystem, CANFuelSubsystem ballSubsystem, ClimberSubsystem climberSubsystem) {
+
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
     addCommands(
-        // Drive backwards for 3 seconds. The driveArcadeAuto command factory
-        // intentionally creates a command which does not end which allows us to control
-        // the timing using the withTimeout decorator
-        new AutoDrive(driveSubsystem, 2.75, 0.0).withTimeout(3), // 2.75 m/s
-        // Spin up the launcher for 0.75 second and then launch balls for 9.25 seconds, for a
-        // total of 10 seconds
-        new LaunchSequence(ballSubsystem).withTimeout(7)); // was 10
+        new ClimbDown(climberSubsystem).withTimeout(3), // 3 Seconds. Climb Down Hooks in Seconds.
+        new AutoDrive(driveSubsystem, 2.75, 0.0).withTimeout(3.2), // 2.75 m/s
+        new LaunchSequence(ballSubsystem).withTimeout(5),
+        new WaitCommand(4.75), // Wait 4.75 seconds to put Climb at End Of Auto to Look Super Cool.
+        new ClimbUp(climberSubsystem)
+            .withTimeout(3.5)); // 3.5 Seconds. Climber Up Hooks to Climb tower in Seconds.
   }
 }
