@@ -147,7 +147,7 @@ public class RobotContainer {
   }
 
   double driveMultipleXY = 1.0;
-  double driveMultipleZ = 0.75;
+  double driveMultipleZ = 1.0;
   /**
    * Use this method to define your button->command mappings. Buttons can be created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
@@ -196,6 +196,8 @@ public class RobotContainer {
     operatorController.povDown().whileTrue(new ClimbDown(climberSubsystem));
     // While the up arrow on the directional pad is held it will cimb the robot
     operatorController.povUp().whileTrue(new ClimbUp(climberSubsystem));
+    // Push X and climber goes to full down position
+    operatorController.x().toggleOnTrue(new ClimbDown(climberSubsystem));
 
     // Removed from Everybot:
     // Set the default command for the drive subsystem to the command provided by

@@ -52,8 +52,8 @@ public final class Constants {
     public static final int LAUNCHER_MOTOR_CURRENT_LIMIT = 80;
 
     // All values likely need to be tuned based on your robot
-    public static final double INDEXER_INTAKING_PERCENT = -0.4; // -.8;
-    public static final double INDEXER_LAUNCHING_PERCENT = 0.7; // 0.6;
+    public static final double INDEXER_INTAKING_PERCENT = -0.2; // -0.4; // -.8;
+    public static final double INDEXER_LAUNCHING_PERCENT = 0.6; // 0.6; // 0.7; // 0.6;
     public static final double INDEXER_SPIN_UP_PRE_LAUNCH_PERCENT = -0.15; // -0.5;
     public static final double INTAKE_INTAKING_PERCENT = 0.5; // 0.6;
     public static final double LAUNCHING_LAUNCHER_PERCENT = 0.85; // .85;
@@ -80,7 +80,7 @@ public final class Constants {
 
     // This value is multiplied by the joystick value when rotating the robot to
     // help avoid turning too fast and beign difficult to control
-    public static final double DRIVE_SCALING = 0.7;
-    public static final double ROTATION_SCALING = 0.8;
+    // public static final double DRIVE_SCALING = 0.7;
+    // public static final double ROTATION_SCALING = 0.8;
   }
 }

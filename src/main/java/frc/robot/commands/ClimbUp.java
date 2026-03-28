@@ -36,6 +36,11 @@ public class ClimbUp extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    if (climberSubsystem.climberAngle() > 55) {
+      return true;
+    } else {
+      return false;
+      // return false;
+    }
   }
 }
