@@ -36,7 +36,7 @@ public class ClimbDown extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (climberSubsystem.climberAngle() < -100) {
+    if (climberSubsystem.climberAngle() < -104) {
       return true;
     } else {
       return false;

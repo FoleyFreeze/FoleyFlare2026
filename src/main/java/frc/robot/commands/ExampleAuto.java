@@ -11,7 +11,7 @@ import frc.robot.subsystems.fuel.CANFuelSubsystem;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class ExampleAuto extends SequentialCommandGroup {
+  public class ExampleAuto extends SequentialCommandGroup {
   /** Creates a new ExampleAuto. */
   public ExampleAuto(
       Drive driveSubsystem, CANFuelSubsystem ballSubsystem, ClimberSubsystem climberSubsystem) {
@@ -24,11 +24,25 @@ public class ExampleAuto extends SequentialCommandGroup {
      */
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
+    // addCommands(
+    //     new ClimbDown(climberSubsystem), // about 3 Seconds. Climb Down Hooks in Seconds.
+    //     new AutoDrive(driveSubsystem, 1, 0.0).withTimeout(2.05),
+    //     new LaunchSequence(ballSubsystem).withTimeout(4),
+    //     new WaitCommand(3.5), // Wait 6.5 seconds to put Climb at End Of Auto to Look Super Cool.
+    //     // new ClimbUp(climberSubsystem)
+    //     //    .withTimeout(4)); // 4 Seconds. Climber Up Hooks to Climb tower in Seconds.
+    //     new ClimbUp(climberSubsystem)
+    //         .withTimeout(4), // 4 Seconds. Climber Up Hooks to Climb tower in Seconds.
+    //     driveSubsystem.zeroSwerve());
     addCommands(
-        new ClimbDown(climberSubsystem), // 3 Seconds. Climb Down Hooks in Seconds.
+        // new ClimbDown(climberSubsystem), // about 3 Seconds. Climb Down Hooks in Seconds.
+        new AutoDrive(driveSubsystem, 1, 0.0).withTimeout(2),
         new LaunchSequence(ballSubsystem).withTimeout(4),
-        new WaitCommand(4.75), // Wait 4.75 seconds to put Climb at End Of Auto to Look Super Cool.
-        new ClimbUp(climberSubsystem)
-            .withTimeout(4)); // 3.5 Seconds. Climber Up Hooks to Climb tower in Seconds.
+        new WaitCommand(3.5), // Wait 6.5 seconds to put Climb at End Of Auto to Look Super Cool.
+        // new ClimbUp(climberSubsystem)
+        //    .withTimeout(4)); // 4 Seconds. Climber Up Hooks to Climb tower in Seconds.
+        // new ClimbUp(climberSubsystem)
+        //    .withTimeout(4), // 4 Seconds. Climber Up Hooks to Climb tower in Seconds.
+        driveSubsystem.zeroSwerve());
   }
 }

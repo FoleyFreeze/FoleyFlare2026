@@ -53,10 +53,10 @@ public final class Constants {
 
     // All values likely need to be tuned based on your robot
     public static final double INDEXER_INTAKING_PERCENT = -0.2; // -0.4; // -.8;
-    public static final double INDEXER_LAUNCHING_PERCENT = 0.6; // 0.6; // 0.7; // 0.6;
+    public static final double INDEXER_LAUNCHING_PERCENT = 0.7; // 0.6; // 0.6; // 0.7; // 0.6;
     public static final double INDEXER_SPIN_UP_PRE_LAUNCH_PERCENT = -0.15; // -0.5;
     public static final double INTAKE_INTAKING_PERCENT = 0.5; // 0.6;
-    public static final double LAUNCHING_LAUNCHER_PERCENT = 0.85; // .85;
+    public static final double LAUNCHING_LAUNCHER_PERCENT = 0.85;
     public static final double INTAKE_EJECT_PERCENT = -0.35; // -0.8;
     public static final double SPIN_UP_SECONDS = 0.75;
   }
