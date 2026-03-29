@@ -13,7 +13,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -61,8 +60,15 @@ public class RobotContainer {
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
 
+  private static RobotContainer instance;
+
+  public static RobotContainer getInstance() {
+    return instance;
+  }
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    instance = this;
 
     fuelSubsystem = new CANFuelSubsystem();
     climberSubsystem = new ClimberSubsystem();
@@ -149,12 +155,6 @@ public class RobotContainer {
 
   double driveMultipleXY = 0.85;
   double driveMultipleZ = 0.7;
-  double driveProgresPow = 2;
-  double driveProgresY =
-      -controller.getLeftY() * Math.pow(Math.abs(controller.getLeftY()), driveProgresPow - 1);
-  double driveProgresX =
-      -controller.getLeftX() * Math.pow(Math.abs(controller.getLeftX()), driveProgresPow - 1);
-
   /**
    * Use this method to define your button->command mappings. Buttons can be created by
    * instantiating a {@link GenericHID} or one of its subclasses ({@link
@@ -163,8 +163,6 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
 
-    SmartDashboard.putNumber("driveProgressY", driveProgresY);
-
     // Default command, normal field-relative drive
     drive.setDefaultCommand(
         DriveCommands.joystickDrive(
@@ -172,10 +170,6 @@ public class RobotContainer {
             () -> -controller.getLeftY() * driveMultipleXY,
             () -> -controller.getLeftX() * driveMultipleXY,
             () -> -controller.getRightX() * driveMultipleZ));
-    // drive,
-    // () -> driveProgresY * driveMultipleXY,
-    // () -> driveProgresX * driveMultipleXY,
-    // () -> -controller.getRightX() * driveMultipleZ));
 
     // Lock to 0° when B button is held
     controller
@@ -186,10 +180,7 @@ public class RobotContainer {
                 () -> -controller.getLeftY() * driveMultipleXY,
                 () -> -controller.getLeftX() * driveMultipleXY,
                 () -> Rotation2d.kZero));
-    // drive,
-    // () -> driveProgresY * driveMultipleXY,
-    // () -> driveProgresX * driveMultipleXY,
-    // () -> Rotation2d.kZero));
+
     controller
         .a()
         .whileTrue(
@@ -198,10 +189,6 @@ public class RobotContainer {
                 () -> -controller.getLeftY() * driveMultipleXY,
                 () -> -controller.getLeftX() * driveMultipleXY,
                 () -> Rotation2d.fromDegrees(drive.getBumpAngle())));
-    // drive,
-    // () -> driveProgresY * driveMultipleXY,
-    // () -> driveProgresX * driveMultipleXY,
-    // () -> Rotation2d.fromDegrees(drive.getBumpAngle())));
 
     controller.start().onTrue(drive.zeroSwerve());
 

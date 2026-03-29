@@ -36,7 +36,8 @@ public class ClimbUp extends Command {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    if (climberSubsystem.climberAngle() > 55) {
+    if (climberSubsystem.climberAngle()
+        > 40) { // The original max angle was 55 and it fell off the tower
       return true;
     } else {
       return false;

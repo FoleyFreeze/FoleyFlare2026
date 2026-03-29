@@ -67,10 +67,21 @@ public class DriveCommands {
       DoubleSupplier omegaSupplier) {
     return Commands.run(
         () -> {
+          // double driveProgresPow = 2;
+          // double driveProgresY =
+          // -xSupplier.getAsDouble() * Math.pow(Math.abs(xSupplier.getAsDouble()), driveProgresPow
+          // -
+          // 1);
+          // double driveProgresX =
+          // -ySupplier.getAsDouble() *  Math.pow(Math.abs(ySupplier.getAsDouble()), driveProgresPow
+          // -
+          // 1);
+
           // Get linear velocity
+          // Translation2d linearVelocity =
+          //     getLinearVelocityFromJoysticks(driveProgresY, driveProgresX);
           Translation2d linearVelocity =
               getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
-
           // Apply rotation deadband
           double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
 
@@ -86,12 +97,17 @@ public class DriveCommands {
           boolean isFlipped =
               DriverStation.getAlliance().isPresent()
                   && DriverStation.getAlliance().get() == Alliance.Red;
-          drive.runVelocity(
-              ChassisSpeeds.fromFieldRelativeSpeeds(
-                  speeds,
-                  isFlipped
-                      ? drive.getRotation().plus(new Rotation2d(Math.PI))
-                      : drive.getRotation()));
+          if (drive.gyroInputs.connected) {
+            drive.runVelocity(
+                ChassisSpeeds.fromFieldRelativeSpeeds(
+                    speeds,
+                    isFlipped
+                        ? drive.getRotation().plus(new Rotation2d(Math.PI))
+                        : drive.getRotation()));
+          } else {
+            // use robot relative if gyro not connected
+            drive.runVelocity(speeds);
+          }
         },
         drive);
   }
