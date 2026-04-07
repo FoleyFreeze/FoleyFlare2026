@@ -67,21 +67,19 @@ public class DriveCommands {
       DoubleSupplier omegaSupplier) {
     return Commands.run(
         () -> {
-          // double driveProgresPow = 2;
-          // double driveProgresY =
-          // -xSupplier.getAsDouble() * Math.pow(Math.abs(xSupplier.getAsDouble()), driveProgresPow
-          // -
-          // 1);
-          // double driveProgresX =
-          // -ySupplier.getAsDouble() *  Math.pow(Math.abs(ySupplier.getAsDouble()), driveProgresPow
-          // -
-          // 1);
-
+          // drive train joystick progress: current power is 1.
+          double driveProgresPow = 3;
+          double driveProgresY =
+              -xSupplier.getAsDouble()
+                  * Math.pow(Math.abs(xSupplier.getAsDouble()), driveProgresPow - 1);
+          double driveProgresX =
+              -ySupplier.getAsDouble()
+                  * Math.pow(Math.abs(ySupplier.getAsDouble()), driveProgresPow - 1);
           // Get linear velocity
-          // Translation2d linearVelocity =
-          //     getLinearVelocityFromJoysticks(driveProgresY, driveProgresX);
           Translation2d linearVelocity =
-              getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
+              getLinearVelocityFromJoysticks(driveProgresY, driveProgresX);
+          // Translation2d linearVelocity =
+          //     getLinearVelocityFromJoysticks(xSupplier.getAsDouble(), ySupplier.getAsDouble());
           // Apply rotation deadband
           double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
 

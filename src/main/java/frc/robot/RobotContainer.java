@@ -153,7 +153,7 @@ public class RobotContainer {
     configureButtonBindings();
   }
 
-  double driveMultipleXY = 0.85;
+  double driveMultipleXY = 1; // 0.85 originally
   double driveMultipleZ = 0.7;
   /**
    * Use this method to define your button->command mappings. Buttons can be created by
